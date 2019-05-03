@@ -1,6 +1,7 @@
 ﻿using Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ConsoleClient
 {
@@ -8,7 +9,84 @@ namespace ConsoleClient
 	{
 		static void Main(string[] args)
 		{
-			int inicio = 0;
+			// Cantidad de comensales de una mesa
+			int t = Convert.ToInt32(Console.ReadLine());
+			// Platos escojidos por los comensales
+			string[] vectorPlatillos = Console.ReadLine().Split(' ');
+			// Tiempos que tienen disponibles los comensales para comer
+			string[] vectorTiempoDisponible = Console.ReadLine().Split(' ');
+			// Tiempos de los menus en el grafo
+			Dictionary<string, int> tiempoMenus = new Dictionary<string, int>();
+			// Ruta de cada menu
+			Dictionary<string, string> rutaMenus = new Dictionary<string, string>();
+			// lista de lineas para la respuesta que se va enviar al cliente
+			List<string> listaLineas = new List<string>();
+			//Pila para almacenar los platillos 
+			Stack<string> pilaPlatillos = new Stack<string>(4);
+			pilaPlatillos.Push("D");
+			pilaPlatillos.Push("C");
+			pilaPlatillos.Push("B");
+			pilaPlatillos.Push("A");
+
+			for (int k = 0; k <= 3; k++)
+			{
+				string rutaPlato = string.Empty;
+				int tiempoPlatillo = ObtenerTiempoPlatillo(k, ref rutaPlato);
+				string plato = pilaPlatillos.Pop();
+				tiempoMenus.Add(plato, tiempoPlatillo);
+				rutaMenus.Add(plato, rutaPlato);
+			}
+
+			for (int i = 0; i < vectorPlatillos.Length; i++)
+			{
+				int tiempoPlatillo = tiempoMenus[vectorPlatillos[i]];
+				string platoSegunTiempo = ObtenerPlatilloSegunTiempo(Convert.ToInt32(vectorTiempoDisponible[i]), tiempoMenus);
+				string rutaPlatilloPrincipal = rutaMenus[vectorPlatillos[i]];
+
+				string lineaRespuesta = string.Format("Comensal {0}: {1} {2} \nRuta: {3}", i + 1, tiempoPlatillo, platoSegunTiempo, rutaPlatilloPrincipal);
+				listaLineas.Add(lineaRespuesta);
+			}
+
+			MostarRespuesta(listaLineas);
+
+			// Linea para que no se cierre la consola. 
+			Console.ReadLine();
+		}
+
+		private static void MostarRespuesta(List<string> listaLineas)
+		{
+			Console.WriteLine();
+			foreach (string linea in listaLineas)
+			{
+				Console.Write(linea);
+				Console.WriteLine();
+				Console.WriteLine();
+			}
+		}
+
+		private static string ObtenerPlatilloSegunTiempo(int tiempo, Dictionary<string, int> tiempoMenus)
+		{
+			int tiempoMayor = 0;
+			string platilloRecomendado = string.Empty;
+			foreach (KeyValuePair<string, int> menu in tiempoMenus)
+			{
+				if (menu.Value <= tiempo && menu.Value >= tiempoMayor)
+				{
+					platilloRecomendado = menu.Key;
+					tiempoMayor = menu.Value;
+				}
+			}
+
+			if (tiempoMayor == 0)
+			{
+				platilloRecomendado = "null";
+			}
+
+			return platilloRecomendado;
+		}
+
+		private static int ObtenerTiempoPlatillo(int inicio, ref string ruta)
+		{
 			int final = 0;
 			// index del nodo actual
 			int actual = 0;
@@ -18,10 +96,6 @@ namespace ConsoleClient
 			int cantidadNodos = 22;
 			// Crear el grafo
 			Grafo grafo = CrearGrafo(cantidadNodos);
-
-			Console.WriteLine("Ingresar el indice del nodo inicio");
-			dato = Console.ReadLine();
-			inicio = Convert.ToInt32(dato);
 
 			final = IndexSegundoRecurrido(inicio);
 
@@ -46,28 +120,27 @@ namespace ConsoleClient
 			// Obtener ruta
 			List<int> rutaFinal = ObtenerRuta(inicio, final, tabla, false);
 
-			Console.WriteLine();
-
-			MostrarRuta(rutaInicial, rutaFinal);
-
-			Console.WriteLine();
-
 			int sumaAristas = SumarPesoAristas(rutaInicial, rutaFinal, grafo);
-			Console.WriteLine("Suma total del peso de las aristas: {0}", sumaAristas);
-			Console.ReadLine();
+
+			ruta = MostrarRuta(rutaInicial, rutaFinal);
+
+			return sumaAristas;
 		}
 
-		private static void MostrarRuta(List<int> rutaInicial, List<int> rutaFinal)
+		private static string MostrarRuta(List<int> rutaInicial, List<int> rutaFinal)
 		{
+			string ruta = string.Empty;
 			foreach (int posicion in rutaInicial)
 			{
-				Console.Write("{0}->", posicion);
+				ruta += string.Format("{0}->", posicion);
 			}
 
 			foreach (int posicion in rutaFinal)
 			{
-				Console.Write("{0}->", posicion);
+				ruta += string.Format("{0}->", posicion);
 			}
+
+			return ruta;
 		}
 
 		private static int SumarPesoAristas(List<int> rutaInicial, List<int> rutaFinal, Grafo grafo)
