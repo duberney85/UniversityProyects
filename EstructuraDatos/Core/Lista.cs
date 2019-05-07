@@ -8,6 +8,7 @@ namespace Core
 		public int Dato { get; set; }
 		// atributo que señala al siguiente nodo, clase auto referenciada
 		public Nodo Siguiente { get; set; }
+		public Nodo Anterior { get; set; }
 	}
 	public class Lista
 	{
@@ -19,6 +20,46 @@ namespace Core
 			nodoCabeza = null;
 		}
 
+		public void InsertarOrdenado(int item)
+		{
+			Nodo nodoAnterior;
+			// Nodo temporal que todavia no pertenece a la lista
+			Nodo nodoNuevo = new Nodo
+			{
+				// Se almacena en el atributo dato el valor que viene en item
+				Dato = item,
+				// Se hace que el apuntador señale a null 
+				Siguiente = null,
+				Anterior = null
+			};
+
+			// Verifica si la lista esta vacia 
+			if (nodoCabeza == null)
+			{
+				// Hacemos que nodo sea parte de la lista, se hace la cabeza
+				nodoCabeza = nodoNuevo;
+			}
+			else
+			{
+				nodoAnterior = nodoCabeza;
+				while (nodoAnterior.Siguiente != null && nodoAnterior.Siguiente.Dato <= item)
+				{
+					nodoAnterior = nodoAnterior.Siguiente;
+				}
+
+				if (nodoAnterior.Dato > nodoNuevo.Dato)
+				{
+					Nodo aux = nodoAnterior;
+					nodoAnterior = nodoNuevo;
+					nodoNuevo.Siguiente = aux;
+				}
+				else
+				{
+					nodoAnterior.Siguiente = nodoNuevo;
+				}
+			}
+		}
+
 		/// <summary>
 		/// Inserta un elemento al final de la lista
 		/// </summary>
@@ -26,7 +67,7 @@ namespace Core
 		public void InsertarFinal(int item)
 		{
 			// Nodo temporal que todavia no pertenece a la lista
-			Nodo nodoAuxiliar = new Nodo
+			Nodo nodoNuevo = new Nodo
 			{
 				// Se almacena en el atributo dato el valor que viene en item
 				Dato = item,
@@ -38,7 +79,7 @@ namespace Core
 			if (nodoCabeza == null)
 			{
 				// Hacemos que nodo sea parte de la lista, se hace la cabeza
-				nodoCabeza = nodoAuxiliar;
+				nodoCabeza = nodoNuevo;
 			}
 			else
 			{
@@ -52,7 +93,7 @@ namespace Core
 					nodoPuntero = nodoPuntero.Siguiente;
 				}
 				// hacemos que el ultimo nodo señale al auxiliar
-				nodoPuntero.Siguiente = nodoAuxiliar;
+				nodoPuntero.Siguiente = nodoNuevo;
 			}
 		}
 
@@ -161,8 +202,6 @@ namespace Core
 				// si posicion es 1 se inserta en la cabeza
 				if (posicion == 1)
 				{
-					//nodoCabeza = nodoAuxiliar;
-					//nodoAuxiliar.siguiente = nodoPuntero;
 					InsertarInicio(item);
 				}
 				else
@@ -188,6 +227,88 @@ namespace Core
 					nodoNuevo.Siguiente = nodoPunteroAuxiliar;
 					// con las ultimas cuatro lineas es como cortar la lista y volverla unir con el nuevo elemento
 				}
+			}
+		}
+
+		/// <summary>
+		/// Obtiene el nodo que esta en la cola
+		/// </summary>
+		/// <returns>retorna el nodo que se encontro en la cola</returns>
+		public Nodo ObtenerNodoCola()
+		{
+			if (nodoCabeza == null)
+			{
+				Console.WriteLine("Lista vacia, no hay ultimo nodo!");
+				return null;
+			}
+			else
+			{
+				// se requieren dos punteros
+				Nodo nodoPunteroAnterior, nodoPunteroPosterior;
+				// se inician ambos punteros con el nodo cabeza
+				nodoPunteroAnterior = nodoPunteroPosterior = nodoCabeza;
+
+				// mientras nodoPunteroPosterior no señale a null, significa que no se ha llegado al final
+				while (nodoPunteroPosterior.Siguiente != null)
+				{
+					// el punteroAnterior sera el punteroPosterior antes que 
+					// el puntero posterior avance al siguiente nodo
+					nodoPunteroAnterior = nodoPunteroPosterior;
+					nodoPunteroPosterior = nodoPunteroPosterior.Siguiente;
+				}
+
+				// punteroAnterior ya tiene el ultimo elemento, por que antes que punteroPosterior avanzara
+				// se asigno a punteroAnterior y cuando punteroPosterior es null es porque ya no hay nodos
+				return nodoPunteroAnterior.Siguiente;
+			}
+		}
+
+		public void OrdenarLista()
+		{
+			if (nodoCabeza == null)
+			{
+				Console.WriteLine("Lista vacia, no se puede ordenar");
+			}
+			else
+			{
+				bool cambio;
+				Nodo nodoPrimero = nodoCabeza;
+				do
+				{
+					Nodo nodoActual = nodoPrimero;
+					Nodo nodoAnterior = null;
+					Nodo nodoSiguiente = nodoPrimero.Siguiente;
+					cambio = false;
+					while (nodoSiguiente != null)
+					{
+						if (nodoActual.Dato > nodoSiguiente.Dato)
+						{
+							cambio = true;
+							if (nodoAnterior != null)
+							{
+								Nodo nodoAuxSiguiente = nodoSiguiente.Siguiente;
+								nodoAnterior.Siguiente = nodoSiguiente;
+								nodoSiguiente.Siguiente = nodoActual;
+								nodoActual.Siguiente = nodoAuxSiguiente;
+							}
+							else
+							{
+								Nodo nodoAuxSiguiente = nodoSiguiente.Siguiente;
+								nodoPrimero = nodoSiguiente;
+								nodoSiguiente.Siguiente = nodoActual;
+								nodoActual.Siguiente = nodoAuxSiguiente;
+							}
+							nodoAnterior = nodoSiguiente;
+							nodoSiguiente = nodoActual.Siguiente;
+						}
+						else
+						{
+							nodoAnterior = nodoActual;
+							nodoActual = nodoSiguiente;
+							nodoSiguiente = nodoSiguiente.Siguiente;
+						}
+					}
+				} while (cambio);
 			}
 		}
 
