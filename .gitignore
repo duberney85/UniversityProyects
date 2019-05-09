@@ -1,12 +1,8 @@
 *.log
-EstructuraDatos/Client/bin/
-EstructuraDatos/Client/obj/
-EstructuraDatos/Practica/bin/
-EstructuraDatos/Practica/obj/
-EstructuraDatos/SimuladorWPF/bin/
-EstructuraDatos/Simulador/obj/
-EstructuraDatos/Simulador/bin/
-EstructuraDatos/Simulador/obj/
+EstructuraDatos/SimuladorGrafosWPF/bin/
+EstructuraDatos/SimuladorGrafosWPF/obj/
+EstructuraDatos/SimuladorGrafos/bin/
+EstructuraDatos/SimuladorGrafos/obj/
 EstructuraDatos/ConsoleClient/bin/
 EstructuraDatos/ConsoleClient/obj/
 EstructuraDatos/Core/bin/

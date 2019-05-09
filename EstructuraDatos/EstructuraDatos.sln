@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimuladorWPF", "Client\SimuladorWPF.csproj", "{A3CE714E-AEAB-423B-A0C6-FE8374598ADF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimuladorGrafosWPF", "SimuladorGrafosWPF\SimuladorGrafosWPF.csproj", "{A3CE714E-AEAB-423B-A0C6-FE8374598ADF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{44EEF7CF-3395-4EE9-828B-9D1FC25CDCE6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleClient", "ConsoleClient\ConsoleClient.csproj", "{BA452501-91DB-412E-9902-45BA2FC2BC10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examen2", "Practica\Examen2.csproj", "{2EFA4CD4-F962-48BF-BC24-C142E4C8BDE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examen2", "Examen2\Examen2.csproj", "{2EFA4CD4-F962-48BF-BC24-C142E4C8BDE0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulador", "Simulador\Simulador.csproj", "{509E70B4-E5D5-4CA1-8697-E6F277710CC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimuladorGrafos", "SimuladorGrafos\SimuladorGrafos.csproj", "{509E70B4-E5D5-4CA1-8697-E6F277710CC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

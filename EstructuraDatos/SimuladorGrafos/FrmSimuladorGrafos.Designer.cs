@@ -28,16 +28,16 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.panel = new System.Windows.Forms.Panel();
+			this.pizarra = new System.Windows.Forms.Panel();
 			this.label1 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
-			// panel
+			// pizarra
 			// 
-			this.panel.Location = new System.Drawing.Point(12, 74);
-			this.panel.Name = "panel";
-			this.panel.Size = new System.Drawing.Size(776, 364);
-			this.panel.TabIndex = 0;
+			this.pizarra.Location = new System.Drawing.Point(12, 74);
+			this.pizarra.Name = "pizarra";
+			this.pizarra.Size = new System.Drawing.Size(776, 364);
+			this.pizarra.TabIndex = 0;
 			// 
 			// label1
 			// 
@@ -55,7 +55,7 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
 			this.Controls.Add(this.label1);
-			this.Controls.Add(this.panel);
+			this.Controls.Add(this.pizarra);
 			this.Name = "FrmSimulador";
 			this.Text = "Simulador de grafos";
 			this.ResumeLayout(false);
@@ -65,7 +65,7 @@
 
 		#endregion
 
-		private System.Windows.Forms.Panel panel;
+		private System.Windows.Forms.Panel pizarra;
 		private System.Windows.Forms.Label label1;
 	}
 }
