@@ -44,6 +44,7 @@
     <Compile Include="Business.cs" />
     <Compile Include="Grafo.cs" />
     <Compile Include="Lista.cs" />
+    <Compile Include="ListaDobleEnlazada.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

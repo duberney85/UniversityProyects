@@ -8,7 +8,6 @@ namespace Core
 		public int Dato { get; set; }
 		// atributo que señala al siguiente nodo, clase auto referenciada
 		public Nodo Siguiente { get; set; }
-		public Nodo Anterior { get; set; }
 	}
 	public class Lista
 	{
@@ -29,8 +28,7 @@ namespace Core
 				// Se almacena en el atributo dato el valor que viene en item
 				Dato = item,
 				// Se hace que el apuntador señale a null 
-				Siguiente = null,
-				Anterior = null
+				Siguiente = null
 			};
 
 			// Verifica si la lista esta vacia 
@@ -263,53 +261,71 @@ namespace Core
 			}
 		}
 
-		public void OrdenarLista()
+		public void Ordenar()
 		{
-			if (nodoCabeza == null)
+			if (nodoCabeza != null && nodoCabeza.Siguiente != null)
 			{
-				Console.WriteLine("Lista vacia, no se puede ordenar");
-			}
-			else
-			{
-				bool cambio;
-				Nodo nodoPrimero = nodoCabeza;
-				do
+				Nodo nodoPuntero = nodoCabeza;
+				Nodo nodoPunteroSiguiente = nodoPuntero.Siguiente;
+				while (nodoPuntero.Siguiente != null)
 				{
-					Nodo nodoActual = nodoPrimero;
-					Nodo nodoAnterior = null;
-					Nodo nodoSiguiente = nodoPrimero.Siguiente;
-					cambio = false;
-					while (nodoSiguiente != null)
+					if (nodoPuntero.Dato < nodoPunteroSiguiente.Dato)
 					{
-						if (nodoActual.Dato > nodoSiguiente.Dato)
+						if (nodoPunteroSiguiente.Siguiente != null)
 						{
-							cambio = true;
-							if (nodoAnterior != null)
-							{
-								Nodo nodoAuxSiguiente = nodoSiguiente.Siguiente;
-								nodoAnterior.Siguiente = nodoSiguiente;
-								nodoSiguiente.Siguiente = nodoActual;
-								nodoActual.Siguiente = nodoAuxSiguiente;
-							}
-							else
-							{
-								Nodo nodoAuxSiguiente = nodoSiguiente.Siguiente;
-								nodoPrimero = nodoSiguiente;
-								nodoSiguiente.Siguiente = nodoActual;
-								nodoActual.Siguiente = nodoAuxSiguiente;
-							}
-							nodoAnterior = nodoSiguiente;
-							nodoSiguiente = nodoActual.Siguiente;
+							nodoPunteroSiguiente = nodoPunteroSiguiente.Siguiente;
 						}
 						else
 						{
-							nodoAnterior = nodoActual;
-							nodoActual = nodoSiguiente;
-							nodoSiguiente = nodoSiguiente.Siguiente;
+							nodoPuntero = nodoPuntero.Siguiente;
+							nodoPunteroSiguiente = nodoPuntero.Siguiente;
 						}
 					}
-				} while (cambio);
+					else
+					{
+						int aux = nodoPuntero.Dato;
+						nodoPuntero.Dato = nodoPunteroSiguiente.Dato;
+						nodoPunteroSiguiente.Dato = aux;
+						if (nodoPunteroSiguiente.Siguiente != null)
+						{
+							nodoPunteroSiguiente = nodoPunteroSiguiente.Siguiente;
+						}
+						else
+						{
+							nodoPuntero = nodoPuntero.Siguiente;
+							nodoPunteroSiguiente = nodoPuntero.Siguiente;
+						}
+					}
+				}
 			}
+		}
+
+		public Lista ObtenerDiferencia()
+		{
+			Nodo nodoPuntero = nodoCabeza;
+			Lista listaDirencia = new Lista();
+			while (nodoPuntero != null)
+			{
+				if (nodoPuntero.Siguiente != null)
+				{
+					if (nodoPuntero.Dato != nodoPuntero.Siguiente.Dato)
+					{
+						listaDirencia.InsertarFinal(nodoPuntero.Dato);
+						nodoPuntero = nodoPuntero.Siguiente;
+					}
+					else
+					{
+						nodoPuntero = nodoPuntero.Siguiente.Siguiente;
+					}
+				}
+				else
+				{
+					listaDirencia.InsertarFinal(nodoPuntero.Dato);
+					nodoPuntero = nodoPuntero.Siguiente;
+				}
+			}
+
+			return listaDirencia;
 		}
 
 		/// <summary>
