@@ -9,12 +9,12 @@ namespace Core
 		// atributo que señala al siguiente nodo, clase auto referenciada
 		public Nodo Siguiente { get; set; }
 	}
-	public class Lista
+	public class ListaEnlazada
 	{
 		// Cabeza de la lista
 		public Nodo nodoCabeza;
 
-		public Lista()
+		public ListaEnlazada()
 		{
 			nodoCabeza = null;
 		}
@@ -300,10 +300,10 @@ namespace Core
 			}
 		}
 
-		public Lista ObtenerDiferencia()
+		public ListaEnlazada ObtenerDiferencia()
 		{
 			Nodo nodoPuntero = nodoCabeza;
-			Lista listaDirencia = new Lista();
+			ListaEnlazada listaDirencia = new ListaEnlazada();
 			while (nodoPuntero != null)
 			{
 				if (nodoPuntero.Siguiente != null)

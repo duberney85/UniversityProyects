@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 
 namespace Core
 {
@@ -8,6 +10,23 @@ namespace Core
 		private readonly int[] _indegree;
 		private readonly int _nodos;
 
+        /// <summary>
+        /// Lista de nodos del grafo
+        /// </summary>
+        public List<Vertice> Nodos;
+
+        /// <summary>
+        /// Crea un grafo para manejarlo con una lista de adyacencia
+        /// </summary>
+        public Grafo()
+        {
+            Nodos = new List<Vertice>();
+        }
+
+        /// <summary>
+        /// Constructor para crear un grafo con matriz de adyacencia
+        /// </summary>
+        /// <param name="totalNodos"></param>
 		public Grafo(int totalNodos)
 		{
 			_nodos = totalNodos;
@@ -19,12 +38,14 @@ namespace Core
 			_indegree = new int[_nodos];
 		}
 
-		/// <summary>
-		/// Adiciona una arista entre dos nodos 
-		/// </summary>
-		/// <param name="nodoInicio">posicion inicial</param>
-		/// <param name="nodoFin">posicion final</param>
-		public void AdicionarArista(int nodoInicio, int nodoFin)
+        #region Metodos para trabajar el grafo con matriz de adyacencia
+
+        /// <summary>
+        /// Adiciona una arista entre dos nodos 
+        /// </summary>
+        /// <param name="nodoInicio">posicion inicial</param>
+        /// <param name="nodoFin">posicion final</param>
+        public void AdicionarArista(int nodoInicio, int nodoFin)
 		{
 			_matrizAdyacencia[nodoInicio, nodoFin] = 1;
 		}
@@ -151,5 +172,138 @@ namespace Core
 				}
 			}
 		}
-	}
+        #endregion Metodos para trabajar el grafo con matriz de adyacencia
+
+        #region Metodos para trabajar el grafo con una lista de adyacencia
+        /// <summary>
+        /// Crea un nodo apartir de su nombre y lo agrega a la lista de nodos
+        /// </summary>
+        /// <param name="nombre">Nombre del nodo a agregar</param>
+        /// <returns>Nodo creado</returns>
+        public Vertice AgregarVertice(string nombre)
+        {
+            Vertice nuevoNodo = new Vertice(nombre);
+            Nodos.Add(nuevoNodo);
+            return nuevoNodo;
+        }
+
+        /// <summary>
+        /// Agrega un nodo a la lista de nodos
+        /// </summary>
+        /// <param name="nuevoNodo"></param>
+        public void AgregarVertice(Vertice nuevoNodo)
+        {
+            Nodos.Add(nuevoNodo);
+        }
+
+        /// <summary>
+        /// Busca un nodo por su nombre en la lista de nodos 
+        /// </summary>
+        /// <param name="valor">Nombre del nodo a buscar</param>
+        /// <returns>Nodo encontrado</returns>
+        public Vertice BuscarVertice(string valor)
+        {
+            return Nodos.Find(x => x.Nombre == valor);
+        }
+
+        /// <summary>
+        /// Une dos nodos por medio de una arista(arco)
+        /// </summary>
+        /// <param name="nombreOrigen">Nombre del nodo origen</param>
+        /// <param name="nombreDestino">Nombre del nodo destino</param>
+        /// <param name="peso">Peso de la arista</param>
+        /// <returns>True si la arista se agregó correctamente, false si no se agregó</returns>
+        public bool AgregarArista(string nombreOrigen, string nombreDestino, int peso = 1)
+        {
+            Vertice nodoOrigen, nodoDestino;
+
+            if((nodoOrigen = Nodos.Find(x=>x.Nombre==nombreOrigen))==null)
+            {
+                throw new Exception(string.Format("El nodo {0} no existe dentro del grafo", nombreOrigen));
+            }
+
+            if((nodoDestino = Nodos.Find(x=> x.Nombre == nombreDestino))==null)
+            {
+                throw new Exception(string.Format("El nodo {0} no existe dentro del grafo", nombreDestino));
+            }
+
+            return AgregarArista(nodoOrigen, nodoDestino, peso);
+        }
+
+        /// <summary>
+        /// Crea la arista apartir de los nodos origen y destino y los agrega a la lista adyacente
+        /// </summary>
+        /// <param name="nodoOrigen">Nodo origen</param>
+        /// <param name="nodoDestion">Nodo destino</param>
+        /// <param name="peso">Peso de la arista</param>
+        /// <returns>True si adicionó, False si no se</returns>
+        public bool AgregarArista(Vertice nodoOrigen, Vertice nodoDestion, int peso = 1)
+        {
+            if(nodoOrigen.ListaAdyacencia.Find(x=>x.VerticeDestino == nodoOrigen)==null)
+            {
+                nodoOrigen.ListaAdyacencia.Add(new Arista(nodoDestion, peso));
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Metodo para dibujar un grafo
+        /// </summary>
+        /// <param name="g">Grafico a dibujar</param>
+        public void DibujarGrafo(Graphics g)
+        {
+            // Dibujar las aristas
+            foreach (Vertice nodo in Nodos)
+            {
+                nodo.DibujarArista(g);
+            }
+
+            // Dibujar los vertices o nodos
+            foreach (Vertice nodo in Nodos)
+            {
+                nodo.DibujarVertice(g);
+            }
+        }
+
+        /// <summary>
+        /// Metodo para detectar si se ha posicionado sobre algun nodo y lo devuelve
+        /// </summary>
+        /// <returns>Nodo seleccionado</returns>
+        public Vertice DetectarPunto(Point posicionMouse)
+        {
+            foreach (Vertice nodo in Nodos)
+            {
+                if(nodo.DetectarPunto(posicionMouse))
+                {
+                    return nodo;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Reestablece el grafo al estado original
+        /// </summary>
+        /// <param name="g">Grafico a dibujar</param>
+        public void ReestablecerGrafo(Graphics g)
+        {
+            foreach (Vertice nodo in Nodos)
+            {
+                nodo.ColorVertice = Color.White;
+                nodo.ColorFuente = Color.Black;
+                foreach (Arista arista in nodo.ListaAdyacencia)
+                {
+                    arista.GrosorFlecha = 1;
+                    arista.ColorArista = Color.Black;
+                }
+            }
+
+            DibujarGrafo(g);
+        }
+
+        #endregion Metodos para trabajar el grafo con una lista de adyacencia
+    }
 }

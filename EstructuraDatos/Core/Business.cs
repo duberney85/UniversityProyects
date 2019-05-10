@@ -9,7 +9,7 @@ namespace Core
 		string[] vector;
 		const string rutaArchivoPruebas = @"D:\Proyectos\Test\Pruebas\TextoPrueba.txt";
 
-		public void crearEjercicio()
+		public void CrearEjercicio()
 		{
 			int t = Convert.ToInt32(Console.ReadLine());
 			while (t > 0)
@@ -49,7 +49,7 @@ namespace Core
 					{
 						aux = charArr[i];
 
-						p.push(charArr[i]);
+						p.Push(charArr[i]);
 					}
 					else
 					{
@@ -58,7 +58,7 @@ namespace Core
 					}
 				}
 
-				p.printStack();
+				p.PrintStack();
 
 			}
 		}
@@ -99,12 +99,12 @@ namespace Core
 			Console.WriteLine(resultado);
 		}
 
-		public void mostrarResultado(Queue colaMostrar)
+		public void MostrarResultado(Queue colaMostrar)
 		{
 				
 		}
 
-		public void crearEjercicioQuiz()
+		public void CrearEjercicioQuiz()
 		{
 			int t = Convert.ToInt32(Console.ReadLine());
 			while (t > 0)
@@ -172,7 +172,7 @@ namespace Core
 				max = size;
 			}
 
-			public void push(string item)
+			public void Push(string item)
 			{
 				if (top == max - 1)
 				{
@@ -185,7 +185,7 @@ namespace Core
 				}
 			}
 
-			public string pop()
+			public string Pop()
 			{
 				if (top == -1)
 				{
@@ -199,7 +199,7 @@ namespace Core
 				}
 			}
 
-			public void printStack()
+			public void PrintStack()
 			{
 				if (top == -1)
 				{
@@ -236,7 +236,7 @@ namespace Core
 
 			// Function to add an item to the queue.  
 			// It changes rear and size 
-			public void enqueue(int item)
+			public void Enqueue(int item)
 			{
 				if (rear == max - 1)
 				{
@@ -252,7 +252,7 @@ namespace Core
 
 			// Function to remove an item from queue.  
 			// It changes front and size 
-			public int dequeue()
+			public int Dequeue()
 			{
 				if (front == rear + 1)
 				{
@@ -272,7 +272,7 @@ namespace Core
 			}
 
 			// Function to print queue.  
-			public void printQueue()
+			public void PrintQueue()
 			{
 				if (front == rear + 1)
 				{

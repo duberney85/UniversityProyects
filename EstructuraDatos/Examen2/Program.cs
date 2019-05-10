@@ -56,7 +56,7 @@ namespace Practica
 			string[] vectorLista = Console.ReadLine().Split(' ');
 
 
-			Lista listaSimetrica = new Lista();
+			ListaEnlazada listaSimetrica = new ListaEnlazada();
 			for (int i = 0; i < vectorLista.Length; i++)
 			{
 				if (!string.IsNullOrEmpty(vectorLista[i]))
@@ -79,7 +79,7 @@ namespace Practica
 			}
 
 			listaSimetrica.Ordenar();
-			Lista listaSimetricaFinal = listaSimetrica.ObtenerDiferencia();
+			ListaEnlazada listaSimetricaFinal = listaSimetrica.ObtenerDiferencia();
 			if (listaSimetrica != null)
 			{
 				Console.Write("La diferencia simetrica es: ");

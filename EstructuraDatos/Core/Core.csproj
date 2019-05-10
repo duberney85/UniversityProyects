@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -41,11 +42,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Arista.cs" />
     <Compile Include="Business.cs" />
     <Compile Include="Grafo.cs" />
-    <Compile Include="Lista.cs" />
+    <Compile Include="ListaEnlazada.cs" />
+    <Compile Include="ListaAdyacencia.cs" />
     <Compile Include="ListaDobleEnlazada.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Vertice.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
