@@ -31,7 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.txtVertice = new System.Windows.Forms.TextBox();
-            this.bntAceptar = new System.Windows.Forms.Button();
+            this.btnAceptar = new System.Windows.Forms.Button();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
@@ -63,15 +63,17 @@
             this.txtVertice.Name = "txtVertice";
             this.txtVertice.Size = new System.Drawing.Size(128, 23);
             this.txtVertice.TabIndex = 2;
+            this.txtVertice.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtVertice_KeyDown);
             // 
-            // bntAceptar
+            // btnAceptar
             // 
-            this.bntAceptar.Location = new System.Drawing.Point(42, 146);
-            this.bntAceptar.Name = "bntAceptar";
-            this.bntAceptar.Size = new System.Drawing.Size(93, 23);
-            this.bntAceptar.TabIndex = 3;
-            this.bntAceptar.Text = "Aceptar";
-            this.bntAceptar.UseVisualStyleBackColor = true;
+            this.btnAceptar.Location = new System.Drawing.Point(42, 146);
+            this.btnAceptar.Name = "btnAceptar";
+            this.btnAceptar.Size = new System.Drawing.Size(93, 23);
+            this.btnAceptar.TabIndex = 3;
+            this.btnAceptar.Text = "Aceptar";
+            this.btnAceptar.UseVisualStyleBackColor = true;
+            this.btnAceptar.Click += new System.EventHandler(this.btnAceptar_Click);
             // 
             // btnCancelar
             // 
@@ -81,6 +83,7 @@
             this.btnCancelar.TabIndex = 4;
             this.btnCancelar.Text = "Cancelar";
             this.btnCancelar.UseVisualStyleBackColor = true;
+            this.btnCancelar.Click += new System.EventHandler(this.btnCancelar_Click);
             // 
             // FrmAgregarVertice
             // 
@@ -88,12 +91,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(344, 205);
             this.Controls.Add(this.btnCancelar);
-            this.Controls.Add(this.bntAceptar);
+            this.Controls.Add(this.btnAceptar);
             this.Controls.Add(this.txtVertice);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "FrmAgregarVertice";
             this.Text = "FrmAgregarVertice";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FrmAgregarVertice_FormClosing);
+            this.Load += new System.EventHandler(this.FrmAgregarVertice_Load);
+            this.Shown += new System.EventHandler(this.FrmAgregarVertice_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FrmAgregarVertice_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -103,7 +110,7 @@
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button bntAceptar;
+        private System.Windows.Forms.Button btnAceptar;
         private System.Windows.Forms.Button btnCancelar;
         public System.Windows.Forms.TextBox txtVertice;
     }

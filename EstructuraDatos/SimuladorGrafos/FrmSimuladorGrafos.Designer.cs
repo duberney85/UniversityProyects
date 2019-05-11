@@ -30,10 +30,10 @@
 		{
             this.components = new System.ComponentModel.Container();
             this.Pizarra = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.CMSCrearVertice = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NuevoVerticeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.contextMenuStrip1.SuspendLayout();
+            this.CMSCrearVertice.SuspendLayout();
             this.SuspendLayout();
             // 
             // Pizarra
@@ -43,25 +43,28 @@
             this.Pizarra.Size = new System.Drawing.Size(776, 364);
             this.Pizarra.TabIndex = 0;
             this.Pizarra.Paint += new System.Windows.Forms.PaintEventHandler(this.Pizarra_Paint);
+            this.Pizarra.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Pizarra_MouseDown);
             this.Pizarra.MouseLeave += new System.EventHandler(this.Pizarra_MouseLeave);
+            this.Pizarra.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Pizarra_MouseMove);
+            this.Pizarra.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Pizarra_MouseUp);
             // 
-            // label1
+            // lblTitle
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.SystemColors.HotTrack;
-            this.label1.Location = new System.Drawing.Point(289, 36);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(178, 24);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Simulador de grafos";
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTitle.ForeColor = System.Drawing.SystemColors.HotTrack;
+            this.lblTitle.Location = new System.Drawing.Point(289, 36);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(178, 24);
+            this.lblTitle.TabIndex = 1;
+            this.lblTitle.Text = "Simulador de grafos";
             // 
-            // contextMenuStrip1
+            // CMSCrearVertice
             // 
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.CMSCrearVertice.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NuevoVerticeToolStripMenuItem});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(148, 26);
+            this.CMSCrearVertice.Name = "contextMenuStrip1";
+            this.CMSCrearVertice.Size = new System.Drawing.Size(181, 48);
             // 
             // NuevoVerticeToolStripMenuItem
             // 
@@ -75,11 +78,11 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblTitle);
             this.Controls.Add(this.Pizarra);
             this.Name = "FrmSimulador";
             this.Text = "Simulador de grafos";
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.CMSCrearVertice.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -88,8 +91,8 @@
 		#endregion
 
 		private System.Windows.Forms.Panel Pizarra;
-		private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+		private System.Windows.Forms.Label lblTitle;
+        private System.Windows.Forms.ContextMenuStrip CMSCrearVertice;
         private System.Windows.Forms.ToolStripMenuItem NuevoVerticeToolStripMenuItem;
     }
 }

@@ -11,70 +11,124 @@ namespace Core
     public class Vertice
     {
         #region Atributos
-        public string Nombre;
-        /// <summary>
-        /// Lista de adyacencia de los nodos
-        /// </summary>
-        public List<Arista> ListaAdyacencia;
-        readonly Dictionary<string, short> _banderas;
-        readonly Dictionary<string, short> _banderasPredeterminado;
+        private string _nombre;
+        private readonly Dictionary<string, short> _banderas;
+        private readonly Dictionary<string, short> _banderasPredeterminado;
+        private List<Arista> _listaAdyacencia;
+        private static int _size = 35;
+        private int _radio;
+        private Color _colorVertice;
+        private Point _posicion;
+        private Size _dimensiones;
+        private Color _colorFuente;
         #endregion Atributos
 
         #region Propiedades
-        //Tamaño del nodo
-        private static int size = 35;
-        private int radio;
-        private Color colorVertice;
         /// <summary>
         /// Color definido para el nodo
         /// </summary>
         public Color ColorVertice
         {
-            get { return colorVertice; }
-            set { colorVertice = value; }
+            get { return _colorVertice; }
+            set { _colorVertice = value; }
         }
 
-        private Color colorFuente;
         /// <summary>
         /// Color definido para la fuente del nombre del nodo
         /// </summary>
         public Color ColorFuente
         {
-            get { return colorFuente; }
-            set { colorFuente = value; }
+            get { return _colorFuente; }
+            set { _colorFuente = value; }
         }
 
-        private Point posicion;
         /// <summary>
         /// Donde se dibujara el nodo
         /// </summary>
         public Point Posicion
         {
-            get { return posicion; }
-            set { posicion = value; }
+            get { return _posicion; }
+            set { _posicion = value; }
         }
 
-        private Size dimensiones;
         /// <summary>
         /// Dimensiones algo y ancho del nodo
         /// </summary>
         public Size Dimensiones
         {
-            get { return dimensiones; }
+            get { return _dimensiones; }
             set
             {
-                radio = value.Width / 2;
-                dimensiones = value;
+                _radio = value.Width / 2;
+                _dimensiones = value;
             }
         }
+        /// <summary>
+        /// Nombre del nodo
+        /// </summary>
+        public string Nombre
+        {
+            get { return _nombre; }
+            set { _nombre = value; }
+        }
+
+        /// <summary>
+        /// Lista de adyacencia de los nodos
+        /// </summary>
+        public List<Arista> ListaAdyacencia
+        {
+            get { return _listaAdyacencia; }
+            set { _listaAdyacencia = value; }
+        }
+
+        private int _distanciaNodo;
+        private bool _visitado;
+        private Vertice _padre;
+        private bool _pesoAsignado;
+
+        /// <summary>
+        /// Variable que se usa en el algoritmo de Dijkstra
+        /// </summary>
+        public bool PesoAsignado
+        {
+            get { return _pesoAsignado; }
+            set { _pesoAsignado = value; }
+        }
+
+        /// <summary>
+        /// Indentifica el nodo antecesor en los recorridos
+        /// </summary>
+        public Vertice Padre
+        {
+            get { return _padre; }
+            set { _padre = value; }
+        }
+
+        /// <summary>
+        /// Marca como visitado el nodo en un recorrido
+        /// </summary>
+        public bool Visitado
+        {
+            get { return _visitado; }
+            set { _visitado = value; }
+        }
+
+        /// <summary>
+        /// Guarda la distancia que hay entre el nodo inicio en el algoritmo de Dijkstra
+        /// </summary>
+        public int DistanciaNodo
+        {
+            get { return _distanciaNodo; }
+            set { _distanciaNodo = value; }
+        }
         #endregion Propiedades
+
         /// <summary>
         /// Constructor por defecto
         /// </summary>
         public Vertice()
             : this("")
         {
-
         }
 
         /// <summary>
@@ -83,13 +137,14 @@ namespace Core
         /// <param name="nombre">Nombre del nodo</param>
         public Vertice(string nombre)
         {
-            Nombre = nombre;
-            ListaAdyacencia = new List<Arista>();
+            _nombre = nombre;
+            _listaAdyacencia = new List<Arista>();
             _banderas = new Dictionary<string, short>();
             _banderasPredeterminado = new Dictionary<string, short>();
-            ColorFuente = Color.Green;
-            Dimensiones = new Size(size, size);
-            ColorFuente = Color.White;
+            _colorVertice = Color.FromArgb(51, 204, 255);
+            _colorFuente = Color.Black;
+            _dimensiones = new Size(_size, _size);
+            _visitado = false;
         }
 
         /// <summary>
@@ -98,13 +153,13 @@ namespace Core
         /// <param name="g">Grafico que se va agregar</param>
         public void DibujarVertice(Graphics g)
         {
-            SolidBrush solidBrush = new SolidBrush(ColorVertice);
+            SolidBrush solidBrush = new SolidBrush(_colorVertice);
 
             // Se define donde se va dibujar el nodo 
             Rectangle areaNodo = new Rectangle(
-                Posicion.X - radio,
-                Posicion.Y - radio,
-                Dimensiones.Width, Dimensiones.Height);
+                _posicion.X - _radio,
+                _posicion.Y - _radio,
+                _dimensiones.Width, _dimensiones.Height);
 
             // Rellena el interior de una elipse de finida por un rectangulo
             g.FillEllipse(solidBrush, areaNodo);
@@ -117,11 +172,11 @@ namespace Core
 
             // Dibuja la cadena de texto especificada en la ubicación especificada
             g.DrawString(
-                Nombre,
+                _nombre,
                 new Font("Times New Roman", 14),
-                new SolidBrush(ColorFuente),
-                Posicion.X,
-                Posicion.Y,
+                new SolidBrush(_colorFuente),
+                _posicion.X,
+                _posicion.Y,
                 formatoTexto);
 
             // Dibuja una elipse especificada por una estructura Rectangle
@@ -140,10 +195,10 @@ namespace Core
             float distancia;
             int diferenciaX, diferenciaY;
 
-            foreach (Arista arista in ListaAdyacencia)
+            foreach (Arista arista in _listaAdyacencia)
             {
-                diferenciaX = Posicion.X - arista.VerticeDestino.Posicion.X;
-                diferenciaY = Posicion.Y - arista.VerticeDestino.Posicion.Y;
+                diferenciaX = _posicion.X - arista.VerticeDestino.Posicion.X;
+                diferenciaY = _posicion.Y - arista.VerticeDestino.Posicion.Y;
                 distancia = (float)Math.Sqrt((diferenciaX * diferenciaX + diferenciaY * diferenciaY));
 
                 // Representa un extremo de línea ajustable en forma de flecha
@@ -158,18 +213,18 @@ namespace Core
                     CustomEndCap = bigArrow,
                     Alignment = PenAlignment.Center
                 },
-                Posicion,
+                _posicion,
                 new Point(
-                    arista.VerticeDestino.Posicion.X + (int)(radio * diferenciaX / distancia),
-                    arista.VerticeDestino.Posicion.Y + (int)(radio * diferenciaY / distancia))
+                    arista.VerticeDestino.Posicion.X + (int)(_radio * diferenciaX / distancia),
+                    arista.VerticeDestino.Posicion.Y + (int)(_radio * diferenciaY / distancia))
                 );
 
                 g.DrawString(
                     arista.Peso.ToString(),
                     new Font("Times New Roman", 12),
                     new SolidBrush(Color.White),
-                    Posicion.X - (int)((diferenciaX / 3)),
-                    Posicion.Y - (int)((diferenciaY / 3)),
+                    _posicion.X - (int)((diferenciaX / 3)),
+                    _posicion.Y - (int)((diferenciaY / 3)),
                     new StringFormat
                     {
                         Alignment = StringAlignment.Center,
@@ -188,10 +243,10 @@ namespace Core
         {
             GraphicsPath posicion = new GraphicsPath();
             posicion.AddEllipse(new Rectangle(
-                Posicion.X - Dimensiones.Width / 2,
-                Posicion.Y - Dimensiones.Height / 2,
-                Dimensiones.Width,
-                Dimensiones.Height));
+                _posicion.X - _dimensiones.Width / 2,
+                _posicion.Y - _dimensiones.Height / 2,
+                _dimensiones.Width,
+                _dimensiones.Height));
             bool esVisible = posicion.IsVisible(punto);
             posicion.Dispose();
 
@@ -200,7 +255,32 @@ namespace Core
 
         public override string ToString()
         {
-            return Nombre;
+            return _nombre;
+        }
+
+        public void Colorear(Graphics g)
+        {
+            SolidBrush solidBrush = new SolidBrush(Color.GreenYellow);
+            // Definir donde dibujar el nodo
+            Rectangle areaNodo = new Rectangle(
+                _posicion.X - _radio,
+                _posicion.Y - _radio,
+                _dimensiones.Width,
+                _dimensiones.Height);
+            g.FillEllipse(solidBrush, areaNodo);
+            g.DrawString(
+                _nombre,
+                new Font("Times New Roman", 14),
+                new SolidBrush(_colorFuente),
+                _posicion.X,
+                _posicion.Y,
+                new StringFormat()
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                });
+            g.DrawEllipse(new Pen(Brushes.Black, (float)1.0), areaNodo);
+            g.Dispose();
         }
 
 
