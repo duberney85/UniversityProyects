@@ -1,8 +1,11 @@
 ﻿using Core;
 using SimuladorGrafos;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Simulador
@@ -36,6 +39,49 @@ namespace Simulador
         /// Ventana para agregar los vertices
         /// </summary>
         private FrmAgregarVertice _ventanaVertice;
+        /// <summary>
+        /// Ventana para agregar las aristas
+        /// </summary>
+        private frmAgregarArista _ventanaArista;
+        /// <summary>
+        /// Lista de nodos utilizados en una ruta
+        /// </summary>
+        private List<Vertice> _nodosRuta;
+        /// <summary>
+        /// Lista de nodos ordenados apartir del nodo origen
+        /// </summary>
+        private List<Vertice> _nodosOrdenados;
+        /// <summary>
+        /// guarda el numero de nodos del grafo
+        /// </summary>
+        private int _numeroNodos = 0;
+        private bool _buscarRuta = false, _nuevoVertice = false, _nuevaArista = false;
+        /// <summary>
+        /// Variables que controlan los recorridos
+        /// </summary>
+        private bool _profundidad = false, _anchura = false, _nodoEncontrado = false;
+        /// <summary>
+        /// Cola utilizada para recorrer el grafo en anchura
+        /// </summary>
+        private Queue _colaAnchura;
+        /// <summary>
+        /// Nombre de los nodos a ubicar
+        /// </summary>
+        private string _nombreNodoOrigen, _nombreNodoDestino;
+        /// <summary>
+        /// Distancia entre nodo origen y destino
+        /// </summary>
+        private int _distancia = 0;
+        private int _totalNodos;
+        /// <summary>
+        /// Vector padres nodo
+        /// </summary>
+        int[] _nodoPadre;
+        /// <summary>
+        /// Vector para comparar los nodos ya visitados
+        /// </summary>
+        bool[] _visitados;
+
 
         public FrmSimulador()
         {
@@ -44,12 +90,52 @@ namespace Simulador
             _nuevoNodo = null;
             _varControl = 0;
             _ventanaVertice = new FrmAgregarVertice();
-
+            _ventanaArista = new frmAgregarArista();
+            _nodosRuta = new List<Vertice>();
+            _nodosOrdenados = new List<Vertice>();
+            _colaAnchura = new Queue();
             this.SetStyle(
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.UserPaint |
-                ControlStyles.OptimizedDoubleBuffer,
-                true);
+                ControlStyles.OptimizedDoubleBuffer, true);
+        }
+
+        /// <summary>
+        /// Calcula las matrices iniciales de distancia y nodos
+        /// </summary>
+        private void calcularMatricesIniciales()
+        {
+            _nodosRuta = new List<Vertice>();
+            _totalNodos = _grafo.ListaNodos.Count;
+            _nodoPadre = new int[_totalNodos];
+            _visitados = new bool[_totalNodos];
+            // Calcular la matriz inicial de distancia
+            for (int i = 0; i < _totalNodos; i++)
+            {
+                List<int> filaDistancia = new List<int>();
+                for (int k = 0; k < _totalNodos; k++)
+                {
+                    // si el origen = al destino
+                    if (i == k)
+                    {
+                        filaDistancia.Add(0);
+                    }
+                    else
+                    {
+                        // Buscar si existe la relacion i,k si existe se obtiene la distancia 
+                        int distancia = -1;
+                        for (int j = 0; j < _grafo.ListaNodos[i].ListaAdyacencia.Count; j++)
+                        {
+                            if (_grafo.ListaNodos[i].ListaAdyacencia[j].VerticeDestino ==
+                                _grafo.ListaNodos[k])
+                            {
+                                distancia = _grafo.ListaNodos[i].ListaAdyacencia[j].Peso;
+                            }
+                        }
+                        filaDistancia.Add(distancia);
+                    }
+                }
+            }
         }
 
         private void Pizarra_Paint(object sender, PaintEventArgs e)
@@ -58,10 +144,118 @@ namespace Simulador
             {
                 e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
                 _grafo.DibujarGrafo(e.Graphics);
+                if (_nuevoVertice)
+                {
+                    cbVertices.Items.Clear();
+                    cbVertices.SelectedIndex = -1;
+                    cbNodoPartida.Items.Clear();
+                    cbNodoPartida.SelectedIndex = -1;
+                    foreach (Vertice nodo in _grafo.ListaNodos)
+                    {
+                        cbVertices.Items.Add(nodo.Nombre);
+                        cbNodoPartida.Items.Add(nodo.Nombre);
+                    }
+                    _nuevoVertice = false;
+                }
+                if (_nuevaArista)
+                {
+                    cbAristas.Items.Clear();
+                    cbAristas.SelectedIndex = -1;
+                    foreach (Vertice nodo in _grafo.ListaNodos)
+                    {
+                        foreach (Arista arista in nodo.ListaAdyacencia)
+                        {
+                            cbAristas.Items.Add(
+                                string.Format(
+                                    "({0},{1}) peso: {2}",
+                                    nodo.Nombre,
+                                    arista.VerticeDestino.Nombre,
+                                    arista.Peso
+                                 )
+                            );
+                        }
+                    }
+                    _nuevaArista = false;
+                }
+                if (_buscarRuta)
+                {
+                    foreach (Vertice nodo in _nodosRuta)
+                    {
+                        nodo.Colorear(e.Graphics);
+                        Thread.Sleep(1000);
+                        nodo.DibujarVertice(e.Graphics);
+                    }
+                    _buscarRuta = false;
+                }
+                if (_profundidad)
+                {
+                    // Ordenar nodos desde el que indica el usuario
+                    OrdenarNodos();
+                    foreach (Vertice nodo in _nodosOrdenados)
+                    {
+                        if (!nodo.Visitado)
+                        {
+                            RecorridoProfundidad(nodo, e.Graphics);
+                        }
+                    }
+                    _profundidad = false;
+                    // Reestablecer los valores
+                    foreach (Vertice nodo in _grafo.ListaNodos)
+                    {
+                        nodo.Visitado = false;
+                    }
+                }
+                if (_anchura)
+                {
+                    _distancia = 0;
+                    // Ordenar los nodos desde el que indica el usuario
+                    _colaAnchura = new Queue();
+                    OrdenarNodos();
+                    foreach (Vertice nodo in _nodosOrdenados)
+                    {
+                        if (!nodo.Visitado && !_nodoEncontrado)
+                        {
+                            RecorridoAnchura(nodo, e.Graphics, _nombreNodoDestino);
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Ordenar los nodos del grafo
+        /// </summary>
+        private void OrdenarNodos()
+        {
+            _nodosOrdenados = new List<Vertice>();
+            bool est = false;
+            foreach (Vertice nodo in _grafo.ListaNodos)
+            {
+                if (nodo.Nombre == _nombreNodoOrigen)
+                {
+                    _nodosOrdenados.Add(nodo);
+                    est = true;
+                }
+                else if (est)
+                {
+                    _nodosOrdenados.Add(nodo);
+                }
+            }
+            foreach (Vertice nodo in _grafo.ListaNodos)
+            {
+                if (nodo.Nombre == _nombreNodoOrigen)
+                {
+                    est = false;
+                    break;
+                }
+                else if (est)
+                {
+                    _nodosOrdenados.Add(nodo);
+                }
             }
         }
 
@@ -85,23 +279,30 @@ namespace Simulador
         {
             switch (_varControl)
             {
+                // Dibujar arista
                 case 1:
                     {
                         if ((_nodoDestino = _grafo.DetectarPunto(e.Location)) != null &&
                             _nodoOrigen != _nodoDestino)
                         {
-                            // Se crear la arista
-                            if (_grafo.AgregarArista(_nodoOrigen, _nodoDestino))
+                            _ventanaArista.Visible = false;
+                            _ventanaArista.Control = false;
+                            _ventanaArista.ShowDialog();
+                            if (_ventanaArista.Control)
                             {
-                                int distancia = 0;
-                                _nodoOrigen.ListaAdyacencia.Find(
-                                    x => x.VerticeDestino == _nodoDestino).Peso = distancia;
+                                // Se crear la arista
+                                if (_grafo.AgregarArista(_nodoOrigen, _nodoDestino))
+                                {
+                                    int distancia = 0;
+                                    _nodoOrigen.ListaAdyacencia.Find(
+                                        x => x.VerticeDestino == _nodoDestino).Peso = distancia;
+                                }
+                                _nuevaArista = true;
                             }
                         }
                         _varControl = 0;
                         _nodoOrigen = null;
                         _nodoDestino = null;
-
                         this.Pizarra.Refresh();
                         break;
                     }
@@ -114,7 +315,7 @@ namespace Simulador
         {
             switch (_varControl)
             {
-                // Crear nuevo nodo
+                // Creando nuevo nodo
                 case 2:
                     {
                         if (_nuevoNodo != null)
@@ -149,7 +350,7 @@ namespace Simulador
                 // Crear arista
                 case 1:
                     {
-                        // Dibujar arco
+                        // Dibujar arista
                         AdjustableArrowCap bigArrow = new AdjustableArrowCap(4, 4, true);
                         bigArrow.BaseCap = LineCap.Triangle;
 
@@ -158,7 +359,8 @@ namespace Simulador
                             new Pen(Brushes.Black, 2)
                             {
                                 CustomEndCap = bigArrow
-                            }, _nodoOrigen.Posicion, e.Location);
+                            },
+                            _nodoOrigen.Posicion, e.Location);
                         break;
                     }
                 default:
@@ -181,28 +383,24 @@ namespace Simulador
                 {
                     _ventanaVertice.Visible = false;
                     _ventanaVertice.Control = false;
-                    _grafo.AgregarVertice(_nuevoNodo);
                     _ventanaVertice.ShowDialog();
-
+                    _numeroNodos = _grafo.ListaNodos.Count;
                     if (_ventanaVertice.Control)
                     {
-                        if (_grafo.BuscarVertice(_ventanaVertice.txtVertice.Text) == null)
+                        if (_grafo.BuscarVertice(_ventanaVertice.Dato) == null)
                         {
+                            _grafo.AgregarVertice(_nuevoNodo);
                             _nuevoNodo.Nombre = _ventanaVertice.txtVertice.Text;
                         }
                         else
                         {
-                            MessageBox.Show(string.Format(
-                                "El Nodo {0} ya existe en el grafo",
-                                _ventanaVertice.txtVertice.Text),
-                                "Error nuevo Nodo",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Exclamation);
+                            this.lblRespuesta.Text = string.Format("El nodo {0} ya existe en el grafo", _ventanaVertice.Dato);
+                            this.lblRespuesta.ForeColor = Color.Red;
                         }
                     }
                     _nuevoNodo = null;
+                    _nuevoVertice = true;
                     _varControl = 0;
-
                     this.Pizarra.Refresh();
                 }
             }
@@ -220,6 +418,188 @@ namespace Simulador
                     {
                         this.Pizarra.ContextMenuStrip = this.CMSCrearVertice;
                     }
+                }
+            }
+        }
+
+        private void btnEliminarVertice_Click(object sender, EventArgs e)
+        {
+            if (cbVertices.SelectedIndex > -1)
+            {
+                foreach (Vertice nodo in _grafo.ListaNodos)
+                {
+                    if (nodo.Nombre == cbVertices.SelectedItem.ToString())
+                    {
+                        _grafo.ListaNodos.Remove(nodo);
+                        //Borrar aristas que tenga el nodo eliminado
+                        nodo.ListaAdyacencia = new List<Arista>();
+                        break;
+                    }
+                }
+                foreach (Vertice nodo in _grafo.ListaNodos)
+                {
+                    foreach (Arista arista in nodo.ListaAdyacencia)
+                    {
+                        if (arista.VerticeDestino.Nombre == cbVertices.SelectedItem.ToString())
+                        {
+                            nodo.ListaAdyacencia.Remove(arista);
+                            break;
+                        }
+                    }
+                }
+                _nuevaArista = true;
+                _nuevoVertice = true;
+                cbVertices.SelectedIndex = -1;
+                this.Pizarra.Refresh();
+            }
+            else
+            {
+                this.lblRespuesta.Text = "Seleccione un nodo";
+                this.lblRespuesta.ForeColor = Color.Red;
+            }
+        }
+
+        private void btnEliminarArista_Click(object sender, EventArgs e)
+        {
+            if (cbAristas.SelectedIndex > -1)
+            {
+                foreach (Vertice nodo in _grafo.ListaNodos)
+                {
+                    foreach (Arista arista in nodo.ListaAdyacencia)
+                    {
+                        if (string.Format("({0},{1}) peso: {2}",
+                            nodo.Nombre, arista.VerticeDestino.Nombre, arista.Peso) ==
+                            cbAristas.SelectedItem.ToString())
+                        {
+                            nodo.ListaAdyacencia.Remove(arista);
+                        }
+                    }
+                }
+                _nuevoVertice = true;
+                _nuevaArista = true;
+                cbAristas.SelectedIndex = -1;
+                this.Pizarra.Refresh();
+            }
+            else
+            {
+                lblRespuesta.Text = "Seleccione una arista";
+                lblRespuesta.ForeColor = Color.Red;
+            }
+        }
+
+        private void btnRecorridoProfundidad_Click(object sender, EventArgs e)
+        {
+            if (cbNodoPartida.SelectedIndex > -1)
+            {
+                _profundidad = true;
+                _nombreNodoOrigen = cbNodoPartida.SelectedItem.ToString();
+                this.Pizarra.Refresh();
+                cbNodoPartida.SelectedIndex = -1;
+            }
+            else
+            {
+                lblRespuesta.Text = "Seleccione un nodo de partida";
+                lblRespuesta.ForeColor = Color.Red;
+            }
+        }
+
+        private void btnRecorridoAnchura_Click(object sender, EventArgs e)
+        {
+            if (cbNodoPartida.SelectedIndex > -1)
+            {
+                _anchura = true;
+                _nombreNodoOrigen = cbNodoPartida.SelectedItem.ToString();
+                this.Pizarra.Refresh();
+                cbNodoPartida.SelectedIndex = -1;
+            }
+            else
+            {
+                lblRespuesta.Text = "Seleccione un nodo de partida";
+                lblRespuesta.ForeColor = Color.Red;
+            }
+        }
+
+        /// <summary>
+        /// Recorrido del grafo en profundidad 
+        /// </summary>
+        /// <param name="nodo">Nodo donde se inicia el recorrido</param>
+        /// <param name="g">Grafico del grafo</param>
+        private void RecorridoProfundidad(Vertice nodo, Graphics g)
+        {
+            nodo.Visitado = true;
+            nodo.Colorear(g);
+            Thread.Sleep(1000);
+            nodo.DibujarVertice(g);
+            foreach (Arista aristaAdyacente in nodo.ListaAdyacencia)
+            {
+                if (!aristaAdyacente.VerticeDestino.Visitado)
+                {
+                    RecorridoProfundidad(aristaAdyacente.VerticeDestino, g);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Recorre el grafo en anchura
+        /// </summary>
+        /// <param name="nodo">Nodo donde inicia el recorrido</param>
+        /// <param name="g">Grafico del grafo</param>
+        /// <param name="nombreDestino">Nombre del nodo destino</param>
+        private void RecorridoAnchura(Vertice nodo, Graphics g, string nombreDestino)
+        {
+            nodo.Visitado = true;
+            _colaAnchura.Enqueue(nodo);
+            nodo.Colorear(g);
+            Thread.Sleep(1000);
+            nodo.DibujarVertice(g);
+            if (nodo.Nombre == nombreDestino)
+            {
+                _nodoEncontrado = true;
+                return;
+            }
+            while (_colaAnchura.Count > 0)
+            {
+                Vertice nodoAux = (Vertice)_colaAnchura.Dequeue();
+                foreach (Arista arista in nodoAux.ListaAdyacencia)
+                {
+                    if (!arista.VerticeDestino.Visitado)
+                    {
+                        if (!_nodoEncontrado)
+                        {
+                            arista.VerticeDestino.Visitado = true;
+                            arista.VerticeDestino.Colorear(g);
+                            Thread.Sleep(1000);
+                            arista.VerticeDestino.DibujarVertice(g);
+                            if (!string.IsNullOrEmpty(nombreDestino))
+                            {
+                                _distancia += arista.Peso;
+                            }
+                            _colaAnchura.Enqueue(arista.VerticeDestino);
+
+                            if (arista.VerticeDestino.Nombre == nombreDestino)
+                            {
+                                _nodoEncontrado = true;
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void btnBuscarNodo_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtNodoBuscar.Text.Trim()))
+            {
+                if (_grafo.BuscarVertice(txtNodoBuscar.Text) != null)
+                {
+                    lblRespuesta.Text = string.Format("Si se encuentra el vértice {0}", txtNodoBuscar.Text);
+                    lblRespuesta.ForeColor = Color.Blue;
+                }
+                else
+                {
+                    lblRespuesta.Text = string.Format("No se encuentra el vértice {0}", txtNodoBuscar.Text);
+                    lblRespuesta.ForeColor = Color.Red;
                 }
             }
         }

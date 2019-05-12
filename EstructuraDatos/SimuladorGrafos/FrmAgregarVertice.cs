@@ -55,6 +55,7 @@ namespace SimuladorGrafos
             }
             else
             {
+                _dato = valor;
                 _control = true;
                 this.Hide();
             }

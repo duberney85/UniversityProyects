@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="frmAgregarArista.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmAgregarArista.Designer.cs">
+      <DependentUpon>frmAgregarArista.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmAgregarVertice.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,6 +66,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="frmAgregarArista.resx">
+      <DependentUpon>frmAgregarArista.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmAgregarVertice.resx">
       <DependentUpon>FrmAgregarVertice.cs</DependentUpon>
     </EmbeddedResource>
