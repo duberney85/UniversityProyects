@@ -183,7 +183,7 @@ namespace Core
             g.DrawEllipse(new Pen(Brushes.Black, (float)1.0), areaNodo);
 
             // Libera el recurso utilizado
-            g.Dispose();
+            solidBrush.Dispose();
         }
 
         /// <summary>
