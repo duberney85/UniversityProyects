@@ -62,6 +62,7 @@
             this.txtPeso.Name = "txtPeso";
             this.txtPeso.Size = new System.Drawing.Size(128, 23);
             this.txtPeso.TabIndex = 7;
+            this.txtPeso.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtPeso_KeyDown);
             // 
             // label2
             // 
@@ -95,6 +96,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "frmAgregarArista";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmAgregarArista";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmAgregarArista_FormClosing);
             this.Load += new System.EventHandler(this.frmAgregarArista_Load);

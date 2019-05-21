@@ -293,9 +293,8 @@ namespace Simulador
                                 // Se crear la arista
                                 if (_grafo.AgregarArista(_nodoOrigen, _nodoDestino))
                                 {
-                                    int distancia = 0;
                                     _nodoOrigen.ListaAdyacencia.Find(
-                                        x => x.VerticeDestino == _nodoDestino).Peso = distancia;
+                                        x => x.VerticeDestino == _nodoDestino).Peso = _ventanaArista.Dato;
                                 }
                                 _nuevaArista = true;
                             }
@@ -472,6 +471,7 @@ namespace Simulador
                             cbAristas.SelectedItem.ToString())
                         {
                             nodo.ListaAdyacencia.Remove(arista);
+                            break;
                         }
                     }
                 }
@@ -485,6 +485,11 @@ namespace Simulador
                 lblRespuesta.Text = "Seleccione una arista";
                 lblRespuesta.ForeColor = Color.Red;
             }
+        }
+
+        private void btnDistancia_Click(object sender, EventArgs e)
+        {
+
         }
 
         private void btnRecorridoProfundidad_Click(object sender, EventArgs e)

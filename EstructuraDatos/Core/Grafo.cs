@@ -387,7 +387,7 @@ namespace Core
         /// <summary>
         /// Re-dibuja las aristas que llegan a un nodo
         /// </summary>
-        /// <param name="nodoDestino">Nodo al que se le van a redibujar las airtas </param>
+        /// <param name="nodoDestino">Nodo al que se le van a redibujar las aristas </param>
         public void DibujarAristasEntrantes(Vertice nodoDestino)
         {
             foreach (Vertice nodo in _listaNodos)

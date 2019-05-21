@@ -222,7 +222,7 @@ namespace Core
                 g.DrawString(
                     arista.Peso.ToString(),
                     new Font("Times New Roman", 12),
-                    new SolidBrush(Color.White),
+                    new SolidBrush(Color.Green),
                     _posicion.X - (int)((diferenciaX / 3)),
                     _posicion.Y - (int)((diferenciaY / 3)),
                     new StringFormat
@@ -280,9 +280,7 @@ namespace Core
                     LineAlignment = StringAlignment.Center
                 });
             g.DrawEllipse(new Pen(Brushes.Black, (float)1.0), areaNodo);
-            g.Dispose();
+            solidBrush.Dispose();
         }
-
-
     }
 }

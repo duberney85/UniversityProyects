@@ -52,10 +52,13 @@ namespace SimuladorGrafos
                     this.Hide();
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                MessageBox.Show(
+                    "Debe ingresar un valor numerico",
+                    "Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
             }
         }
 
@@ -85,6 +88,14 @@ namespace SimuladorGrafos
         private void frmAgregarArista_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.KeyCode == Keys.Enter)
+            {
+                btnAceptar_Click(null, null);
+            }
+        }
+
+        private void txtPeso_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
             {
                 btnAceptar_Click(null, null);
             }
